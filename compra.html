@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<!-- 
+  *** PÁGINA DE CHECKOUT ***
+  Esta página lê as configurações (tema, idioma, plano) do localStorage
+  definidas pelo index.html.
+-->
+<html lang="pt-BR"> <!-- A classe 'dark' será adicionada aqui via JS -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="checkout_page_title">Confirmar Compra | GeneApp Decor</title>
+    
+    <!-- Carrega fontes do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Link para o arquivo CSS externo -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Carrega o Tailwind CSS (DEVE VIR ANTES da configuração) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuração do Tailwind para ativar o 'dark mode' por classe -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'comfortaa': ['Comfortaa', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- **** SCRIPT DE CONFIGURAÇÃO E TEMA MOVIDO PARA O HEAD **** -->
+    <!-- Define constantes e aplica o tema antes da renderização para evitar "flash" -->
+    <script>
+        // --- 0. CONFIGURAÇÃO PADRÃO (Definida aqui) ---
+        
+        // Idioma Padrão: 'pt-br', 'pt-pt', 'es'
+        const defaultLangKey = 'pt-br'; 
+        
+        // Tema Padrão: 'light' ou 'dark'
+        const defaultTheme = 'light'; 
+
+        // Aplica o tema imediatamente
+        (function applyThemeOnLoad() {
+            // A fonte da verdade é APENAS a constante defaultTheme
+            if (defaultTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    
+</head>
+<body class="bg-white text-gray-800 dark:bg-gray-950 dark:text-gray-300 transition-colors duration-300">
+
+    <!-- Header Simplificado --><header class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100 dark:bg-gray-900 dark:shadow-lg dark:border-gray-800">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <!-- Logo -->
+            <div>
+                <a href="index.html" class="inline-block"> 
+                    <div class="flex flex-col items-center dark:bg-white dark:p-2 dark:rounded-md transition-colors duration-300">
+                        <img src="./images/GeneApp.png" alt="GeneApp Decor Logo" class="h-12">
+                        <p class="font-comfortaa text-xl font-bold text-gray-900 dark:text-gray-900 mt-1 leading-none">
+                            Decor
+                        </p>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Botão Voltar -->
+            <div>
+                <a href="index.html" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors duration-300" data-lang="nav_back">
+                    &larr; Voltar
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Seção de Compra --><main>
+        <section id="compra" class="container mx-auto px-6 pt-16 pb-24">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                
+                <!-- Coluna da Esquerda: Resumo e Textos -->
+                <div class="md:pt-8">
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6" data-lang="checkout_title">
+                        Resumo da Compra
+                    </h2>
+
+                    <!-- Card do Plano Selecionado -->
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-lg flex flex-col mb-8">
+                        <h3 id="plan-name" class="text-2xl font-bold text-gray-900 dark:text-white mb-2" data-lang-placeholder="plan_2_title">
+                            ...
+                        </h3>
+                        <p id="plan-desc" class="text-gray-600 dark:text-gray-400 mb-4" data-lang-placeholder="plan_2_desc">
+                            ...
+                        </p>
+                        <p id="plan-price" class="text-4xl font-bold text-gray-900 dark:text-white" data-price-placeholder="plan2">
+                            ...
+                        </p>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4" data-lang="form_instructions_title">
+                        Preencha os seus dados
+                    </h3>
+                    <p class="text-lg text-gray-700 dark:text-gray-300 mb-4" data-lang="form_instructions">
+                        Todos os campos são obrigatórios.
+                    </p>
+                    <p class="text-gray-700 dark:text-gray-300" data-lang="payment_info">
+                        Ao clicar em "Confirmar a Compra", você será redirecionado para uma plataforma de pagamento segura para finalizar o pedido.
+                    </p>
+                </div>
+
+                <!-- Coluna da Direita: Formulário -->
+                <div>
+                    <form class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700">
+                        <div class="mb-4">
+                            <label for="nome" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_name">Seu Nome*</label>
+                            <input type="text" id="nome" name="nome" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_email">Seu E-mail*</label>
+                            <input type="email" id="email" name="email" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="pais" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_country">País*</label>
+                                <select id="pais" name="pais" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                                    <option value="Brasil" selected>🇧🇷 Brasil</option>
+                                    <option value="Portugal">🇵🇹 Portugal</option>
+                                    <option value="Argentina">🇦🇷 Argentina</option>
+                                    <option value="Bolivia">🇧🇴 Bolívia</option>
+                                    <option value="Chile">🇨🇱 Chile</option>
+                                    <option value="Colombia">🇨🇴 Colômbia</option>
+                                    <option value="Equador">🇪🇨 Equador</option>
+                                    <option value="Guiana">🇬🇾 Guiana</option>
+                                    <option value="Guiana Francesa">🇬🇫 Guiana Francesa</option>
+                                    <option value="Paraguai">🇵🇾 Paraguai</option>
+                                    <option value="Peru">🇵🇪 Peru</option>
+                                    <option value="Suriname">🇸🇷 Suriname</option>
+                                    <option value="Uruguai">🇺🇾 Uruguai</option>
+                                    <option value="Venezuela">🇻🇪 Venezuela</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="telefone" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_phone">Telefone*</label>
+                                <input type="tel" id="telefone" name="telefone" required placeholder="+55 (21) 99999-9999" class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                            </div>
+                        </div>
+
+                        <!-- NOVOS CAMPOS OBRIGATÓRIOS -->
+                        <div class="mb-4">
+                            <label for="cpf_cnpj" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_cpf_cnpj">CPF / CNPJ*</label>
+                            <input type="text" id="cpf_cnpj" name="cpf_cnpj" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="bairro" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_bairro">Bairro*</label>
+                                <input type="text" id="bairro" name="bairro" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                            </div>
+                             <div>
+                                <label for="cidade" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_cidade">Cidade*</label>
+                                <input type="text" id="cidade" name="cidade" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                            </div>
+                        </div>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="estado" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_estado">Estado*</label>
+                                <input type="text" id="estado" name="estado" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                            </div>
+                             <div>
+                                <label for="cep" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_cep">CEP*</label>
+                                <input type="text" id="cep" name="cep" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="mensagem" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_message">Mensagem (Opcional)</label>
+                            <textarea id="mensagem" name="mensagem" rows="3" class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white"></textarea>
+                        </div>
+                        
+                        <!-- Botão Confirmar Compra -->
+                        <div>
+                            <button type="submit" class="w-full bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 px-8 py-3 rounded-lg text-lg font-medium transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400" data-lang="form_buy">
+                                Confirmar a Compra
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (Idêntico ao index.html) --><footer class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-2xl font-bold text-gray-900 dark:text-white mb-4">GeneApp Decor</p>
+            <div class="flex justify-center space-x-6 mb-6">
+                <a href="index.html#servico" class="hover:text-gray-900 dark:hover:text-white" data-lang="footer_service">O Serviço</a>
+                <a href="index.html#portfolio" class="hover:text-gray-900 dark:hover:text-white" data-lang="footer_portfolio">Portfólio</a>
+                <a href="index.html#precos" class="hover:text-gray-900 dark:hover:text-white" data-lang="footer_pricing">Preços</a>
+                <a href="index.html#contato" class="hover:text-gray-900 dark:hover:text-white" data-lang="footer_contact">Contato</a>
+            </div>
+            <p data-lang="footer_copy">&copy; 2025 GeneApp Decor. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Script de Tradução e Preenchimento (Versão Checkout) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. DEFINIÇÕES DE DADOS (Copiar de index.html) ---
+            const translations = {
+                'pt-br': {
+                    nav_service: 'O Serviço',
+                    nav_portfolio: 'Antes e Depois',
+                    nav_how: 'Como Funciona',
+                    nav_pricing: 'Preços',
+                    nav_faq: 'FAQ',
+                    nav_contact: 'Entrar em Contato',
+                    nav_back: 'Voltar',
+                    checkout_page_title: 'Confirmar Compra | GeneApp Decor',
+                    checkout_title: 'Resumo da Compra',
+                    form_instructions_title: 'Preencha os seus dados',
+                    form_instructions: 'Todos os campos são obrigatórios.',
+                    payment_info: 'Ao clicar em "Confirmar a Compra", você será redirecionado para uma plataforma de pagamento segura para finalizar o pedido.',
+                    hero_title: 'Destaque seus imóveis e venda mais rápido.',
+                    hero_subtitle: 'Transformamos ambientes vazios ou desatualizados em espaços atraentes e convidativos. Ajude seus clientes a enxergar o verdadeiro potencial do imóvel com a decoração virtual.',
+                    hero_cta: 'Ver Nossos Planos',
+                    service_title: 'Decoração Virtual que Respeita a Realidade',
+                    service_subtitle: 'Nosso compromisso é com a transparência. Criamos visuais deslumbrantes mantendo a integridade do espaço.',
+                    service_card_title: 'Total Preservação Estrutural',
+                    service_card_p1: 'Frisamos que nosso serviço de *home staging* virtual preserva <strong>100% das características físicas</strong> do cômodo. Mantemos a estrutura exata de paredes, teto, portas e janelas.',
+                    service_card_p2: 'O cliente tem total flexibilidade: podemos manter as cores e texturas atuais para uma decoração rápida ou, se preferir, podemos <strong class="text-gray-800 dark:text-gray-100">alterar cores e texturas</strong> de paredes, teto, portas e janelas para mostrar todo o potencial de modernização do espaço. A escolha é sua.',
+                    portfolio_title: 'Veja a Transformação Acontecer',
+                    portfolio_1_title: 'Sala de Estar | Transformação Rural',
+                    portfolio_1_desc: 'Veja como um ambiente pode ser totalmente transformado com a decoração virtual.',
+                    portfolio_2_title: 'Quarto Principal | Imóvel Usado',
+                    portfolio_2_desc: 'Modernização de quarto com móveis datados para um visual limpo e atual.',
+                    portfolio_3_title: 'Cozinha | Lançamento',
+                    portfolio_3_desc: 'Demonstração de potencial com uma cozinha planejada e funcional.',
+                    portfolio_4_title: 'Varanda Gourmet | Área Externa',
+                    portfolio_4_desc: 'Criação de um espaço de lazer e convivência em uma varanda sem uso.',
+                    how_title: 'Nosso Processo: Rápido e Transparente',
+                    how_1_title: 'Contrate o Plano',
+                    how_1_desc: 'Nosso sistema é pré-pago. Escolha e adquira o kit de imagens que melhor atende sua demanda.',
+                    how_2_title: 'Envie os Detalhes',
+                    how_2_desc: 'Você recebe acesso a um formulário simples para anexar a foto, as dimensões e suas preferências de decoração.',
+                    how_3_title: 'Avalie a Prova',
+                    how_3_desc: 'Em até 24h úteis, entramos em contato para você avaliar a imagem desenvolvida e solicitar ajustes, se necessário.',
+                    how_4_title: 'Receba a Imagem',
+                    how_4_desc: 'Após sua aprovação final, enviamos a imagem em alta resolução em até 24h úteis. Pronta para usar!',
+                    pricing_title: 'Investimento Inteligente para Resultados Reais',
+                    pricing_subtitle: 'Preços transparentes para um serviço que acelera o ciclo de vendas e valoriza seus anúncios.',
+                    plan_1_title: 'Plano Unitário',
+                    plan_1_desc: 'Ideal para testar ou para um destaque específico.',
+                    plan_1_feat1: '1 Imagem Decorada',
+                    plan_cta_1: 'Contratar',
+                    plan_popular: 'MAIS POPULAR',
+                    plan_2_title: 'Kit 4 Imagens',
+                    plan_2_desc: 'Perfeito para um apartamento ou casa pequena (Sala, Cozinha, 2 Quartos).',
+                    plan_2_feat1: '4 Imagens Decoradas',
+                    plan_cta_2: 'Contratar Agora',
+                    plan_3_title: 'Kit 10 Imagens',
+                    plan_3_desc: 'Para construtoras e imobiliárias com alta demanda de anúncios.',
+                    plan_3_feat1: '10 Imagens Decoradas',
+                    plan_cta_3: 'Contratar',
+                    economy_2: 'Economia de 11%',
+                    economy_3: 'Melhor Custo-Benefício',
+                    faq_title: 'Perguntas Frequentes (FAQ)',
+                    faq_1_q: 'Quais tipos de ambientes vocês decoram?',
+                    faq_1_a: 'Decoramos qualquer tipo de ambiente interno ou externo: salas, quartos, cozinhas, banheiros, varandas, escritórios, áreas de lazer, etc. Se você tem a foto, nós podemos decorar.',
+                    faq_2_q: 'Posso pedir um estilo de decoração específico?',
+                    faq_2_a: 'Sim! No formulário de envio, você pode especificar o estilo desejado (ex: moderno, industrial, escandinavo, clássico) ou nos dar referências. Nossa equipe de designers fará o possível para seguir sua visão.',
+                    faq_3_q: 'E se eu não gostar da primeira prova?',
+                    faq_3_a: 'A etapa de avaliação serve justamente para isso. Você poderá solicitar ajustes na prova enviada (ex: trocar cor do sofá, mudar posição de um quadro). Nosso objetivo é que você fique 100% satisfeito com a imagem final.',
+                    faq_4_q: 'Que tipo de foto devo enviar?',
+                    faq_4_a: 'Quanto melhor a foto original, melhor o resultado. Prefira fotos bem iluminadas (luz natural é ótima), tiradas na altura dos olhos e em alta resolution. Fotos de celular funcionam bem, desde que não estejam tremidas ou escuras demais.',
+                    contact_title: 'Vamos Conversar?',
+                    contact_p1: 'Tem um projeto de grande volume, uma parceria em mente ou precisa de um plano personalizado para sua construtora ou imobiliária?',
+                    contact_p2: 'Preencha o formulário ao lado e nossa equipe de especialistas entrará em contato o mais breve possível.',
+                    form_name: 'Seu Nome*',
+                    form_email: 'Seu E-mail*',
+                    form_country: 'País*',
+                    form_phone: 'Telefone*',
+                    form_cpf_cnpj: 'CPF / CNPJ*',
+                    form_bairro: 'Bairro*',
+                    form_cidade: 'Cidade*',
+                    form_estado: 'Estado*',
+                    form_cep: 'CEP*',
+                    form_message: 'Mensagem (Opcional)',
+                    form_submit: 'Enviar Contato',
+                    form_buy: 'Confirmar a Compra',
+                    footer_service: 'O Serviço',
+                    footer_portfolio: 'Portfólio',
+                    footer_pricing: 'Preços',
+                    footer_contact: 'Contato',
+                    footer_copy: '© 2025 GeneApp Decor. Todos os direitos reservados.'
+                },
+                'pt-pt': {
+                    nav_service: 'O Serviço',
+                    nav_portfolio: 'Antes e Depois',
+                    nav_how: 'Como Funciona',
+                    nav_pricing: 'Preços',
+                    nav_faq: 'FAQ',
+                    nav_contact: 'Entrar em Contacto',
+                    nav_back: 'Voltar',
+                    checkout_page_title: 'Confirmar Compra | GeneApp Decor',
+                    checkout_title: 'Resumo da Compra',
+                    form_instructions_title: 'Preencha os seus dados',
+                    form_instructions: 'Todos os campos são de preenchimento obrigatório.',
+                    payment_info: 'Ao clicar em "Confirmar a Compra", será redirecionado para uma plataforma de pagamento segura para finalizar o pedido.',
+                    hero_title: 'Destaque os seus imóveis e venda mais rápido.',
+                    hero_subtitle: 'Transformamos ambientes vazios ou desatualizados em espaços atraentes e convidativos. Ajude os seus clientes a enxergar o verdadeiro potencial do imóvel com a decoração virtual.',
+                    hero_cta: 'Ver Os Nossos Planos',
+                    service_title: 'Decoração Virtual que Respeita a Realidade',
+                    service_subtitle: 'O nosso compromisso é com a transparência. Criamos visuais deslumbrantes mantendo a integridade do espaço.',
+                    service_card_title: 'Total Preservação Estrutural',
+                    service_card_p1: 'Frisamos que o nosso serviço de *home staging* virtual preserva <strong>100% das características físicas</strong> do cómodo. Mantemos a estrutura exata de paredes, teto, portas e janelas.',
+                    service_card_p2: 'O cliente tem total flexibilidade: podemos manter as cores e texturas atuais para uma decoração rápida ou, se preferir, podemos <strong class="text-gray-800 dark:text-gray-100">alterar cores e texturas</strong> de paredes, teto, portas e janelas para mostrar todo o potencial de modernização do espaço. A escolha é sua.',
+                    portfolio_title: 'Veja a Transformação Acontecer',
+                    portfolio_1_title: 'Sala de Estar | Transformação Rural',
+                    portfolio_1_desc: 'Veja como um ambiente pode ser totalmente transformado com a decoração virtual.',
+                    portfolio_2_title: 'Quarto Principal | Imóvel Usado',
+                    portfolio_2_desc: 'Modernização de quarto com móveis datados para um visual limpo e atual.',
+                    portfolio_3_title: 'Cozinha | Lançamento',
+                    portfolio_3_desc: 'Demonstração de potencial com uma cozinha planeada e funcional.',
+                    portfolio_4_title: 'Varanda Gourmet | Área Externa',
+                    portfolio_4_desc: 'Criação de um espaço de lazer e convivência numa varanda sem uso.',
+                    how_title: 'O Nosso Processo: Rápido e Transparente',
+                    how_1_title: 'Contrate o Plano',
+                    how_1_desc: 'O nosso sistema é pré-pago. Escolha e adquira o kit de imagens que melhor atende à sua demanda.',
+                    how_2_title: 'Envie os Detalhes',
+                    how_2_desc: 'Recebe acesso a um formulário simples para anexar a foto, as dimensões e as suas preferências de decoração.',
+                    how_3_title: 'Avalie a Prova',
+                    how_3_desc: 'Em até 24h úteis, entramos em contacto para avaliar a imagem desenvolvida e solicitar ajustes, se necessário.',
+                    how_4_title: 'Receba a Imagem',
+                    how_4_desc: 'Após a sua aprovação final, enviamos a imagem em alta resolução em até 24h úteis. Pronta a usar!',
+                    pricing_title: 'Investimento Inteligente para Resultados Reais',
+                    pricing_subtitle: 'Preços transparentes para um serviço que acelera o ciclo de vendas e valoriza os seus anúncios.',
+                    plan_1_title: 'Plano Unitário',
+                    plan_1_desc: 'Ideal para testar ou para um destaque específico.',
+                    plan_1_feat1: '1 Imagem Decorada',
+                    plan_cta_1: 'Contratar',
+                    plan_popular: 'MAIS POPULAR',
+                    plan_2_title: 'Kit 4 Imagens',
+                    plan_2_desc: 'Perfeito para um apartamento ou casa pequena (Sala, Cozinha, 2 Quartos).',
+                    plan_2_feat1: '4 Imagens Decoradas',
+                    plan_cta_2: 'Contratar Agora',
+                    plan_3_title: 'Kit 10 Imagens',
+                    plan_3_desc: 'Para construtoras e imobiliárias com alta demanda de anúncios.',
+                    plan_3_feat1: '10 Imagens Decoradas',
+                    plan_cta_3: 'Contratar',
+                    economy_2: 'Economia de 25%',
+                    economy_3: 'Economia de 34%',
+                    faq_title: 'Perguntas Frequentes (FAQ)',
+                    faq_1_q: 'Que tipos de ambientes vocês decoram?',
+                    faq_1_a: 'Decoramos qualquer tipo de ambiente interno ou externo: salas, quartos, cozinhas, casas de banho, varandas, escritórios, áreas de lazer, etc. Se tem a foto, nós podemos decorar.',
+                    faq_2_q: 'Posso pedir um estilo de decoração específico?',
+                    faq_2_a: 'Sim! No formulário de envio, pode especificar o estilo desejado (ex: moderno, industrial, escandinavo, clássico) ou dar-nos referências. A nossa equipa de designers fará o possível para seguir a sua visão.',
+                    faq_3_q: 'E se eu não gostar da primeira prova?',
+                    faq_3_a: 'A etapa de avaliação serve precisamente para isso. Poderá solicitar ajustes na prova enviada (ex: trocar cor do sofá, mudar posição de um quadro). O nosso objetivo é que fique 100% satisfeito com a imagem final.',
+                    faq_4_q: 'Que tipo de foto devo enviar?',
+                    faq_4_a: 'Quanto melhor a foto original, melhor o resultado. Prefira fotos bem iluminadas (luz natural é ótima), tiradas à altura dos olhos e em alta resolução. Fotos de telemóvel funcionam bem, desde que não estejam tremidas ou escuras demais.',
+                    contact_title: 'Vamos Conversar?',
+                    contact_p1: 'Tem um projeto de grande volume, uma parceria em mente ou precisa de um plano personalizado para a sua construtora ou imobiliária?',
+                    contact_p2: 'Preencha o formulário ao lado e a nossa equipa de especialistas entrará em contacto o mais breve possível.',
+                    form_name: 'O Seu Nome*',
+                    form_email: 'O Seu E-mail*',
+                    form_country: 'País*',
+                    form_phone: 'Telefone*',
+                    form_cpf_cnpj: 'NIF / NIPC*',
+                    form_bairro: 'Freguesia/Bairro*',
+                    form_cidade: 'Cidade*',
+                    form_estado: 'Distrito/Estado*',
+                    form_cep: 'Código Postal*',
+                    form_message: 'Mensagem (Opcional)',
+                    form_submit: 'Enviar Contacto',
+                    form_buy: 'Confirmar a Compra',
+                    footer_service: 'O Serviço',
+                    footer_portfolio: 'Portfólio',
+                    footer_pricing: 'Preços',
+                    footer_contact: 'Contacto',
+                    footer_copy: '© 2025 GeneApp Decor. Todos os direitos reservados.'
+                },
+                es: {
+                    nav_service: 'El Servicio',
+                    nav_portfolio: 'Antes y Después',
+                    nav_how: 'Cómo Funciona',
+                    nav_pricing: 'Precios',
+                    nav_faq: 'FAQ',
+                    nav_contact: 'Contactar',
+                    nav_back: 'Volver',
+                    checkout_page_title: 'Confirmar Compra | GeneApp Decor',
+                    checkout_title: 'Resumen de la Compra',
+                    form_instructions_title: 'Complete sus datos',
+                    form_instructions: 'Todos los campos son obligatorios.',
+                    payment_info: 'Al hacer clic en "Confirmar Compra", será redirigido a una plataforma de pago segura para finalizar el pedido.',
+                    hero_title: 'Destaque sus inmuebles y venda más rápido.',
+                    hero_subtitle: 'Transformamos ambientes vacíos o desactualizados en espacios atractivos y acogedores. Ayude a sus clientes a ver el verdadero potencial del inmueble con la decoração virtual.',
+                    hero_cta: 'Ver Nuestros Planes',
+                    service_title: 'Decoración Virtual que Respeta la Realidade',
+                    service_subtitle: 'Nuestro compromiso es con la transparencia. Creamos visuales impresionantes manteniendo la integridad del espacio.',
+                    service_card_title: 'Total Preservación Estructural',
+                    service_card_p1: 'Destacamos que nuestro servicio de *home staging* virtual preserva <strong>100% las características físicas</strong> de la habitación. Mantenemos la estructura exacta de paredes, techo, puertas y ventanas.',
+                    service_card_p2: 'El cliente tiene total flexibilidad: podemos manter as cores e texturas atuais para uma decoração rápida ou, si prefiere, podemos <strong class="text-gray-800 dark:text-gray-100">cambiar colores y texturas</strong> de paredes, techo, puertas y ventanas para mostrar todo el potencial de modernización del espacio. La elección es suya.',
+                    portfolio_title: 'Vea la Transformación Ocurrir',
+                    portfolio_1_title: 'Sala de Estar | Transformação Rural',
+                    portfolio_1_desc: 'Vea cómo un ambiente puede ser totalmente transformado con la decoração virtual.',
+                    portfolio_2_title: 'Dormitorio Principal | Inmueble Usado',
+                    portfolio_2_desc: 'Modernización de dormitorio con muebles anticuados para un visual limpio y actual.',
+                    portfolio_3_title: 'Cocina | Lanzamiento',
+                    portfolio_3_desc: 'Demostración de potencial con una cocina planificada y funcional.',
+                    portfolio_4_title: 'Balcón Gourmet | Área Externa',
+                    portfolio_4_desc: 'Creación de un espacio de ocio y convivencia en un balcón sin uso.',
+                    how_title: 'Nuestro Proceso: Rápido y Transparente',
+                    how_1_title: 'Contrate el Plan',
+                    how_1_desc: 'Nuestro sistema es prepago. Elija y adquiera el kit de imágenes que mejor se adapte a su demanda.',
+                    how_2_title: 'Envíe los Detalles',
+                    how_2_desc: 'Recibe acceso a um formulário simple para adjuntar la foto, las dimensiones y sus preferences de decoração.',
+                    how_3_title: 'Evalúe la Prueba',
+                    how_3_desc: 'En hasta 24h hábiles, contactamos para que evalúe la imagen desarrollada y solicite ajustes, si es necesario.',
+                    how_4_title: 'Reciba la Imagen',
+                    how_4_desc: 'Después de su aprobación final, enviamos la imagen en alta resolución en hasta 24h hábiles. ¡Lista para usar!',
+                    pricing_title: 'Inversión Inteligente para Resultados Reales',
+                    pricing_subtitle: 'Precios transparentes para un servicio que acelera el ciclo de ventas y valora sus anuncios.',
+                    plan_1_title: 'Plan Unitario',
+                    plan_1_desc: 'Ideal para probar o para un destaque específico.',
+                    plan_1_feat1: '1 Imagen Decorada',
+                    plan_cta_1: 'Contratar',
+                    plan_popular: 'MÁS POPULAR',
+                    plan_2_title: 'Kit 4 Imágenes',
+                    plan_2_desc: 'Perfecto para un apartamento o casa pequeña (Sala, Cocina, 2 Dormitorios).',
+                    plan_2_feat1: '4 Imágenes Decoradas',
+                    plan_cta_2: 'Contratar Ahora',
+                    plan_3_title: 'Kit 10 Imágenes',
+                    plan_3_desc: 'Para constructoras e inmobiliarias con alta demanda de anuncios.',
+                    plan_3_feat1: '10 Imágenes Decoradas',
+                    plan_cta_3: 'Contratar',
+                    economy_2: 'Ahorro del 25%',
+                    economy_3: 'Ahorro del 34%',
+                    faq_title: 'Preguntas Frecuentes (FAQ)',
+                    faq_1_q: '¿Qué tipos de ambientes decoran?',
+                    faq_1_a: 'Decoramos cualquier tipo de ambiente interno o externo: salas, dormitorios, cocinas, baños, balcones, oficinas, áreas de ocio, etc. Si usted tiene la foto, nosotros podemos decorar.',
+                    faq_2_q: '¿Puedo pedir un estilo de decoração específico?',
+                    faq_2_a: '¡Sí! En el formulario de envío, puede especificar el estilo deseado (ej: moderno, industrial, escandinavo, clássico) o darnos referencias. Nuestro equipo de diseñadores hará lo posible para seguir su visión.',
+                    faq_3_q: '¿Y si no me gusta la primera prueba?',
+                    faq_3_a: 'La etapa de evaluación sirve precisamente para eso. Podrá solicitar ajustes en la prueba enviada (ej: cambiar color del sofá, mover un cuadro). Nuestro objetivo es que quede 100% satisfecho con la imagen final.',
+                    faq_4_q: '¿Qué tipo de foto debo enviar?',
+                    faq_4_a: 'Cuanto mejor sea la foto original, mejor será el resultado. Prefiera fotos bien iluminadas (la luz natural es ideal), tomadas a la altura de los ojos y en alta resolución. Las fotos de celular funcionan bien, siempre que no estén movidas o demasiado oscuras.',
+                    contact_title: '¿Hablamos?',
+                    contact_p1: '¿Tiene un proyecto de gran volumen, una asociación en mente o necesita un plan personalizado para su constructora o inmobiliaria?',
+                    contact_p2: 'Complete el formulario al lado y nuestro equipo de especialistas se pondrá en contacto lo antes posible.',
+                    form_name: 'Su Nombre*',
+                    form_email: 'Su E-mail*',
+                    form_country: 'País*',
+                    form_phone: 'Teléfono*',
+                    form_cpf_cnpj: 'DNI / RUC*',
+                    form_bairro: 'Barrio/Distrito*',
+                    form_cidade: 'Ciudad*',
+                    form_estado: 'Provincia/Estado*',
+                    form_cep: 'Código Postal*',
+                    form_message: 'Mensaje (Opcional)',
+                    form_submit: 'Enviar Contacto',
+                    form_buy: 'Confirmar Compra',
+                    footer_service: 'El Servicio',
+                    footer_portfolio: 'Portafolio',
+                    footer_pricing: 'Preços',
+                    footer_contact: 'Contacto',
+                    footer_copy: '© 2025 GeneApp Decor. Todos os derechos reservados.'
+                }
+            };
+            const prices = {
+                brl: {
+                    plan1: 'R$ 57<span class="text-lg font-normal">,00</span>',
+                    plan2: 'R$ 177<span class="text-lg font-normal">,00</span>',
+                    plan3: 'R$ 397<span class="text-lg font-normal">,00</span>',
+                },
+                usd: {
+                    plan1: 'US$ 12<span class="text-lg font-normal">,00</span>',
+                    plan2: 'US$ 36<span class="text-lg font-normal">,00</span>',
+                    plan3: 'US$ 79<span class="text-lg font-normal">,00</span>',
+                }
+            };
+
+            // --- 2. SELETORES DE ELEMENTOS ---
+            const langElements = document.querySelectorAll('[data-lang]');
+            const planNameEl = document.getElementById('plan-name');
+            const planDescEl = document.getElementById('plan-desc');
+            const planPriceEl = document.getElementById('plan-price');
+            
+            // Mapeia o ID do plano (plan1) para as chaves de tradução
+            const planKeyMap = {
+                'plan1': { title: 'plan_1_title', desc: 'plan_1_desc' },
+                'plan2': { title: 'plan_2_title', desc: 'plan_2_desc' },
+                'plan3': { title: 'plan_3_title', desc: 'plan_3_desc' }
+            };
+            
+            // --- 3. FUNÇÕES (Simplificadas para esta página) ---
+
+            /**
+             * Atualiza textos estáticos com base no idioma.
+             */
+            function updateTexts(lang) {
+                langElements.forEach(el => {
+                    const key = el.getAttribute('data-lang');
+                    if (translations[lang] && translations[lang][key]) {
+                        el.innerHTML = translations[lang][key];
+                    }
+                });
+                // Atualiza o título da página
+                document.title = translations[lang]['checkout_page_title'];
+                // Define o idioma da página
+                if(lang === 'pt-br') document.documentElement.lang = 'pt-BR';
+                else if (lang === 'pt-pt') document.documentElement.lang = 'pt-PT';
+                else document.documentElement.lang = lang;
+            }
+
+            // --- 4. INICIALIZAÇÃO ---
+            
+            // Lê os dados salvos pelo index.html
+            const selectedPlanId = localStorage.getItem('selectedPlan') || 'plan1'; // Padrão 'plan1' se nada for encontrado
+            const savedLang = localStorage.getItem('currentLang') || defaultLangKey; // defaultLangKey vem do <head>
+            const savedCurrency = localStorage.getItem('currentCurrency') || 'brl';
+
+            // 1. Aplica o Idioma
+            updateTexts(savedLang);
+
+            // 2. Preenche os detalhes do plano selecionado
+            const planKeys = planKeyMap[selectedPlanId];
+            if (planKeys) {
+                planNameEl.innerHTML = translations[savedLang][planKeys.title];
+                planDescEl.innerHTML = translations[savedLang][planKeys.desc];
+                planPriceEl.innerHTML = prices[savedCurrency][selectedPlanId];
+            } else {
+                // Fallback caso 'selectedPlanId' seja inválido
+                planNameEl.innerHTML = translations[savedLang][planKeyMap['plan1'].title];
+                planDescEl.innerHTML = translations[savedLang][planKeyMap['plan1'].desc];
+                planPriceEl.innerHTML = prices[savedCurrency]['plan1'];
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+/* Define a fonte Inter como padrão */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Aplica a fonte Comfortaa ao logo "Decor" */
+.font-comfortaa {
+    font-family: 'Comfortaa', cursive;
+}
+
+/* Pequeno ajuste para o "toggle" do FAQ */
+.faq-toggle:checked + .faq-question + .faq-answer {
+    max-height: 200px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    opacity: 1;
+}
+
+/* Cor de fundo customizada para inputs em light mode (default) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #f3f4f6 inset !important; /* bg-gray-100 */
+    -webkit-text-fill-color: #111827 !important; /* text-gray-900 */
+    -webkit-border-color: #d1d5db !important; /* border-gray-300 */
+}
+
+/* Cor de fundo customizada para inputs em dark mode */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover, 
+.dark input:-webkit-autofill:focus,
+.dark textarea:-webkit-autofill,
+.dark textarea:-webkit-autofill:hover,
+.dark textarea:-webkit-autofill:focus,
+.dark select:-webkit-autofill,
+.dark select:-webkit-autofill:hover,
+.dark select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #374151 inset !important; /* dark:bg-gray-700 */
+    -webkit-text-fill-color: #f3f4f6 !important; /* dark:text-gray-100 */
+    -webkit-border-color: #4b5563 !important; /* dark:border-gray-600 */
+}

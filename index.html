@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<!-- 
+  *** CONFIGURAÇÕES GLOBAIS ***
+  As constantes de configuração estão no primeiro <script> dentro do <head>.
+
+  1. Idioma Padrão:
+     const defaultLangKey = 'pt-br';
+     Valores aceitos: 'pt-br' (Português Brasil), 'pt-pt' (Português Portugal), 'es' (Espanhol)
+
+  2. Tema Padrão:
+     const defaultTheme = 'light';
+     Valores aceitos: 'light' (Modo Claro), 'dark' (Modo Escuro)
+-->
+<html lang="pt-BR"> <!-- A classe 'dark' será adicionada aqui via JS -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeneApp Decor | Transforme Imóveis e Venda Mais Rápido</title>
+    
+    <!-- Carrega fontes do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Link para o arquivo CSS externo -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Carrega o Tailwind CSS (DEVE VIR ANTES da configuração) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuração do Tailwind para ativar o 'dark mode' por classe -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'comfortaa': ['Comfortaa', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- **** SCRIPT DE CONFIGURAÇÃO E TEMA MOVIDO PARA O HEAD **** -->
+    <!-- Define constantes e aplica o tema antes da renderização para evitar "flash" -->
+    <script>
+        // --- 0. CONFIGURAÇÃO PADRÃO (Definida aqui) ---
+        
+        // Idioma Padrão: 'pt-br', 'pt-pt', 'es'
+        const defaultLangKey = 'pt-br'; 
+        
+        // Tema Padrão: 'light' ou 'dark'
+        const defaultTheme = 'dark'; 
+
+        // Aplica o tema imediatamente
+        (function applyThemeOnLoad() {
+            // A fonte da verdade é APENAS a constante defaultTheme
+            if (defaultTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    
+</head>
+<body class="bg-white text-gray-800 dark:bg-gray-950 dark:text-gray-300 transition-colors duration-300">
+
+    <!-- Header --><header class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100 dark:bg-gray-900 dark:shadow-lg dark:border-gray-800">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div>
+                <a href="#" class="inline-block"> <!-- Link agora envolve o bloco todo -->
+                    <!-- Caixa Branca para modo dark (agora envolve tudo) -->
+                    <div class="flex flex-col items-center dark:bg-white dark:p-2 dark:rounded-md transition-colors duration-300">
+                        <!-- CAMINHO AJUSTADO -->
+                        <img src="./images/GeneApp.png" alt="GeneApp Decor Logo" class="h-12"> <!-- Logo reduzido (h-12) -->
+                        
+                        <!-- Texto "Decor" dentro do quadrado, com fonte Comfortaa e espaçamento ajustado -->
+                        <p class="font-comfortaa text-xl font-bold text-gray-900 dark:text-gray-900 mt-1 leading-none">
+                            Decor
+                        </p>
+                    </div>
+                </a>
+            </div>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#servico" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" data-lang="nav_service">O Serviço</a>
+                <a href="#portfolio" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" data-lang="nav_portfolio">Antes e Depois</a>
+                <a href="#como-funciona" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" data-lang="nav_how">Como Funciona</a>
+                <a href="#precos" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" data-lang="nav_pricing">Preços</a>
+                <a href="#faq" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" data-lang="nav_faq">FAQ</a>
+                <a href="#contato" class="bg-gray-800 text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 px-5 py-2 rounded-lg font-medium transition duration-300" data-lang="nav_contact">
+                    Entrar em Contato
+                </a>
+                <!-- Seletor de Idioma -->
+                <div class="relative">
+                    <select id="lang-selector" class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white p-2 rounded-md appearance-none cursor-pointer" style="padding-right: 2.5rem;">
+                        <option value="pt-br">🇧🇷 Português (BR)</option>
+                        <option value="pt-pt">🇵🇹 Português (PT)</option>
+                        <option value="es">🇪🇸 Español</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Botão Mobile -->
+            <div class="md:hidden flex items-center">
+                <select id="lang-selector-mobile" class="bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white p-2 rounded-md appearance-none cursor-pointer text-sm mr-2" style="padding-right: 2.5rem;">
+                    <option value="pt-br">🇧🇷</option>
+                    <option value="pt-pt">🇵🇹</option>
+                    <option value="es">🇪🇸</option>
+                </select>
+                <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section --><main>
+        <!-- AFASTAMENTO AUMENTADO: md:gap-16 -->
+        <section class="container mx-auto px-6 pt-24 pb-16 flex flex-col md:flex-row items-center md:gap-16">
+            <div class="md:w-1/2 mb-8 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-4" data-lang="hero_title">
+                    Destaque seus imóveis e venda mais rápido.
+                </h1>
+                <!-- CONTRASTE AUMENTADO: text-gray-700 dark:text-gray-300 -->
+                <p class="text-lg text-gray-700 dark:text-gray-300 mb-8" data-lang="hero_subtitle">
+                    Transformamos ambientes vazios ou desatualizados em espaços atraentes e convidativos. Ajude seus clientes a enxergar o verdadeiro potencial do imóvel com a decoração virtual.
+                </p>
+                <a href="#precos" class="bg-gray-800 text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 px-8 py-3 rounded-lg text-lg font-medium transition duration-300" data-lang="hero_cta">
+                    Ver Nossos Planos
+                </a>
+            </div>
+            <div class="md:w-1/2">
+                <!-- Imagem de destaque -->
+                <img src="./images/destaque/destaque.png" alt="Sala de estar elegantemente decorada virtualmente" class="rounded-xl shadow-xl opacity-90">
+            </div>
+        </section>
+
+        <!-- Seção de Confiança (O Serviço) --><section id="servico" class="bg-gray-50 dark:bg-gray-900 py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4" data-lang="service_title">
+                    Decoração Virtual que Respeita a Realidade
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-10" data-lang="service_subtitle">
+                    Nosso compromisso é com a transparência. Criamos visuais deslumbrantes mantendo a integridade do espaço.
+                </p>
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 max-w-4xl mx-auto text-left">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4" data-lang="service_card_title">Total Preservação Estrutural</h3>
+                    <!-- CONTRASTE AUMENTADO: text-gray-700 dark:text-gray-300 -->
+                    <p class="text-gray-700 dark:text-gray-300" data-lang="service_card_p1">
+                        Frisamos que nosso serviço de *home staging* virtual preserva <strong>100% das características físicas</strong> do cômodo. Mantemos a estrutura exata de paredes, teto, portas e janelas.
+                    </p>
+                    <br>
+                    <p class="text-gray-700 dark:text-gray-300" data-lang="service_card_p2">
+                        O cliente tem total flexibilidade: podemos manter as cores e texturas atuais para uma decoração rápida ou, se preferir, podemos <strong class="text-gray-800 dark:text-gray-100">alterar cores e texturas</strong> de paredes, teto, portas e janelas para mostrar todo o potencial de modernização do espaço. A escolha é sua.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfólio "Antes e Depois" (COM ANIMAÇÃO) --><section id="portfolio" class="bg-white dark:bg-gray-950 py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12" data-lang="portfolio_title">
+                    Veja a Transformação Acontecer
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    
+                    <!-- Exemplo 1 - Suas Imagens -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                        <!-- ANIMAÇÃO: Adicionado 'group/sala' e 'group-hover' para zoom -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-0.5 group/sala">
+                            <div class="overflow-hidden"> <!-- Contêiner para cortar o zoom -->
+                                <img src="./images/sala/sala_a.png" alt="Sala vazia antes da decoração virtual" class="object-cover h-64 w-full transition-transform duration-300 ease-in-out group-hover/sala:scale-95 hover:!scale-105">
+                            </div>
+                            <div class="overflow-hidden">
+                                <img src="./images/sala/sala_d.png" alt="Sala decorada virtualmente" class="object-cover h-64 w-full transition-transform duration-300 ease-in-out group-hover/sala:scale-95 hover:!scale-105">
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white" data-lang="portfolio_1_title">Sala de Estar | Transformação Rural</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2" data-lang="portfolio_1_desc">Veja como um ambiente pode ser totalmente transformado com a decoração virtual.</p>
+                        </div>
+                    </div>
+
+                    <!-- Exemplo 2 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                        <!-- ANIMAÇÃO: Adicionado 'group/quarto' e 'group-hover' para zoom -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-0.5 group/quarto">
+                            <div class="overflow-hidden">
+                                <img src="./images/quarto/quarto_a.png" alt="Quarto antigo antes da decoração" class="object-cover h-64 w-full transition-transform duration-300 ease-in-out group-hover/quarto:scale-95 hover:!scale-105">
+                            </div>
+                             <div class="overflow-hidden">
+                                <img src="./images/quarto/quarto_d.png" alt="Quarto decorado virtualmente" class="object-cover h-64 w-full transition-transform duration-300 ease-in-out group-hover/quarto:scale-95 hover:!scale-105">
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white" data-lang="portfolio_2_title">Quarto Principal | Imóvel Usado</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2" data-lang="portfolio_2_desc">Modernização de quarto com móveis datados para um visual limpo e atual.</p>
+                        </div>
+                    </div>
+
+                    <!-- Exemplo 3 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                        <!-- ANIMAÇÃO: Adicionado 'group/cozinha' e 'group-hover' para zoom -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-0.5 group/cozinha">
+                            <div class="overflow-hidden">
+                                <img src="./images/cozinha/cozinha_a.png" alt="Cozinha vazia antes da decoração" class="object-cover h-64 w-full transition-transform duration-300 ease-in-out group-hover/cozinha:scale-95 hover:!scale-105">
+                            </div>
+                            <div class="overflow-hidden">
+                                <img src="./images/cozinha/cozinha_d.png" alt="Cozinha decorada virtualmente" class="object-cover h-64 w-full transition-transform duration-300 ease-in-out group-hover/cozinha:scale-95 hover:!scale-105">
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white" data-lang="portfolio_3_title">Cozinha | Lançamento</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2" data-lang="portfolio_3_desc">Demonstração de potencial com uma cozinha planejada e funcional.</p>
+                        </div>
+                    </div>
+
+                    <!-- Exemplo 4 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                        <!-- ANIMAÇÃO: Adicionado 'group/varanda' e 'group-hover' para zoom -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-0.5 group/varanda">
+                             <div class="overflow-hidden">
+                                <img src="./images/varanda/varanda_a.png" alt="Varanda vazia antes da decoração" class="object-cover h-64 w-full transition-transform duration-300 ease-in-out group-hover/varanda:scale-95 hover:!scale-105">
+                            </div>
+                            <div class="overflow-hidden">
+                                <img src="./images/varanda/varanda_d.png" alt="Varanda decorada virtualmente" class="object-cover h-64 w-full transition-transform duration-300 ease-in-out group-hover/varanda:scale-95 hover:!scale-105">
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white" data-lang="portfolio_4_title">Varanda Gourmet | Área Externa</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2" data-lang="portfolio_4_desc">Criação de um espaço de lazer e convivência em uma varanda sem uso.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Como Funciona (COM CORES) --><section id="como-funciona" class="bg-gray-50 dark:bg-gray-900 py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12" data-lang="how_title">
+                    Nosso Processo: Rápido e Transparente
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                    
+                    <!-- Passo 1: Azul -->
+                    <div class="bg-blue-50 text-blue-900 dark:bg-blue-900/50 dark:text-blue-100 p-6 rounded-xl shadow-lg border border-blue-100 dark:border-blue-700 flex flex-col items-center">
+                        <svg class="w-12 h-12 text-blue-600 dark:text-blue-300 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h6m-6 2.25h6M3 13.5h18M3 17.25h18M3 11.25h18M3 7.5h18M3 4.5h18M2.25 4.5l19.5 0M2.25 8.25l19.5 0M2.25 12l19.5 0M2.25 15.75l19.5 0M2.25 19.5l19.5 0" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 4.5h19.5v15H2.25V4.5zM2.25 8.25h19.5" />
+                        </svg>
+                        <h3 class="text-xl font-bold text-blue-900 dark:text-white mb-2" data-lang="how_1_title">Contrate o Plano</h3>
+                        <p class="text-blue-800 dark:text-blue-200" data-lang="how_1_desc">Nosso sistema é pré-pago. Escolha e adquira o kit de imagens que melhor atende sua demanda.</p>
+                    </div>
+
+                    <!-- Passo 2: Verde -->
+                    <div class="bg-green-50 text-green-900 dark:bg-green-900/50 dark:text-green-100 p-6 rounded-xl shadow-lg border border-green-100 dark:border-green-700 flex flex-col items-center">
+                        <svg class="w-12 h-12 text-green-600 dark:text-green-300 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        <h3 class="text-xl font-bold text-green-900 dark:text-white mb-2" data-lang="how_2_title">Envie os Detalhes</h3>
+                        <p class="text-green-800 dark:text-green-200" data-lang="how_2_desc">Você recebe acesso a um formulário simples para anexar a foto, as dimensões e suas preferências de decoração.</p>
+                    </div>
+
+                    <!-- Passo 3: Amarelo/Âmbar -->
+                    <div class="bg-amber-50 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100 p-6 rounded-xl shadow-lg border border-amber-100 dark:border-amber-700 flex flex-col items-center">
+                        <svg class="w-12 h-12 text-amber-600 dark:text-amber-300 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="text-xl font-bold text-amber-900 dark:text-white mb-2" data-lang="how_3_title">Avalie a Prova</h3>
+                        <p class="text-amber-800 dark:text-amber-200" data-lang="how_3_desc">Em até 24h úteis, entramos em contato para você avaliar a imagem desenvolvida e solicitar ajustes, se necessário.</p>
+                    </div>
+
+                    <!-- Passo 4: Roxo/Púrpura -->
+                    <div class="bg-purple-50 text-purple-900 dark:bg-purple-900/50 dark:text-purple-100 p-6 rounded-xl shadow-lg border border-purple-100 dark:border-purple-700 flex flex-col items-center">
+                        <svg class="w-12 h-12 text-purple-600 dark:text-purple-300 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <h3 class="text-xl font-bold text-purple-900 dark:text-white mb-2" data-lang="how_4_title">Receba a Imagem</h3>
+                        <p class="text-purple-800 dark:text-purple-200" data-lang="how_4_desc">Após sua aprovação final, enviamos a imagem em alta resolução em até 24h úteis. Pronta para usar!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Preços --><section id="precos" class="bg-white dark:bg-gray-950 py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-4" data-lang="pricing_title">
+                    Investimento Inteligente para Resultados Reais
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 text-center max-w-2xl mx-auto mb-12" data-lang="pricing_subtitle">
+                    Preços transparentes para um serviço que acelera o ciclo de vendas e valoriza seus anúncios.
+                </p>
+
+                <!-- Seletor de Moeda -->
+                <div class="flex justify-center items-center space-x-4 mb-10">
+                    <span class="text-lg font-medium text-gray-900 dark:text-white">R$ (BRL)</span>
+                    <label for="currency-toggle" class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="currency-toggle" class="sr-only peer">
+                        <div class="w-14 h-8 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:bg-blue-600"></div>
+                        <span class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 peer-checked:translate-x-6"></span>
+                    </label>
+                    <span class="text-lg font-medium text-gray-900 dark:text-white">US$ (USD)</span>
+                </div>
+
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    
+                    <!-- Plano 1 --><div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-lg flex flex-col">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" data-lang="plan_1_title">Plano Unitário</h3>
+                        <p class="text-4xl font-bold text-gray-900 dark:text-white mb-4" data-price="plan1">R$ 57<span class="text-lg font-normal">,00</span></p>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6" data-lang="plan_1_desc">Ideal para testar ou para um destaque específico.</p>
+                        <ul class="space-y-2 text-gray-700 dark:text-gray-300 mb-8">
+                            <li class="flex items-center" data-lang="plan_1_feat1"><svg class="w-5 h-5 text-gray-800 dark:text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>1 Imagem Decorada</li>
+                        </ul>
+                        <!-- ANIMAÇÃO: Botão com scale -->
+                        <a href="#contato" class="mt-auto w-full text-center bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 font-medium px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105" data-lang="plan_cta_1">Contratar</a>
+                    </div>
+
+                    <!-- Plano 2 (Destaque) --><div class="bg-white dark:bg-gray-800 border-2 border-gray-800 dark:border-white rounded-xl p-8 shadow-2xl flex flex-col relative">
+                        <span class="absolute top-0 -mt-3 bg-gray-800 text-white dark:bg-white dark:text-gray-900 text-xs font-bold px-3 py-1 rounded-full" data-lang="plan_popular">MAIS POPULAR</span>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" data-lang="plan_2_title">Kit 4 Imagens</h3>
+                        <p class="text-4xl font-bold text-gray-900 dark:text-white mb-4" data-price="plan2">R$ 177<span class="text-lg font-normal">,00</span></p>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6" data-lang="plan_2_desc">Perfeito para um apartamento ou casa pequena (Sala, Cozinha, 2 Quartos).</p>
+                        <ul class="space-y-2 text-gray-700 dark:text-gray-300 mb-8">
+                            <li class="flex items-center" data-lang="plan_2_feat1"><svg class="w-5 h-5 text-gray-800 dark:text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>4 Imagens Decoradas</li>
+                            <li class="flex items-center" data-economy="plan2"><svg class="w-5 h-5 text-gray-800 dark:text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Economia de 11%</li>
+                        </ul>
+                        <!-- ANIMAÇÃO: Botão com scale e hover de contraste -->
+                        <a href="#contato" class="mt-auto w-full text-center bg-gray-800 text-white hover:bg-gray-600 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 font-medium px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105" data-lang="plan_cta_2">Contratar Agora</a>
+                    </div>
+
+                    <!-- Plano 3 --><div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-lg flex flex-col">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" data-lang="plan_3_title">Kit 10 Imagens</h3>
+                        <p class="text-4xl font-bold text-gray-900 dark:text-white mb-4" data-price="plan3">R$ 397<span class="text-lg font-normal">,00</span></p>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6" data-lang="plan_3_desc">Para construtoras e imobiliárias com alta demanda de anúncios.</p>
+                        <ul class="space-y-2 text-gray-700 dark:text-gray-300 mb-8">
+                            <li class="flex items-center" data-lang="plan_3_feat1"><svg class="w-5 h-5 text-gray-800 dark:text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>10 Imagens Decoradas</li>
+                            <li class="flex items-center" data-economy="plan3"><svg class="w-5 h-5 text-gray-800 dark:text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Melhor Custo-Benefício</li>
+                        </ul>
+                        <!-- ANIMAÇÃO: Botão com scale -->
+                        <a href="#contato" class="mt-auto w-full text-center bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 font-medium px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105" data-lang="plan_cta_3">Contratar</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ --><section id="faq" class="bg-gray-50 dark:bg-gray-900 py-20">
+            <div class="container mx-auto px-6 max-w-3xl">
+                <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12" data-lang="faq_title">
+                    Perguntas Frequentes (FAQ)
+                </h2>
+                <div class="space-y-4">
+                    
+                    <!-- Pergunta 1 --><div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <input type="checkbox" id="faq-1" class="faq-toggle hidden">
+                        <label for="faq-1" class="faq-question flex justify-between items-center p-6 cursor-pointer">
+                            <span class="text-lg font-medium text-gray-900 dark:text-white" data-lang="faq_1_q">Quais tipos de ambientes vocês decoram?</span>
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </label>
+                        <div class="faq-answer max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out px-6 text-gray-700 dark:text-gray-300" data-lang="faq_1_a">
+                            Decoramos qualquer tipo de ambiente interno ou externo: salas, quartos, cozinhas, banheiros, varandas, escritórios, áreas de lazer, etc. Se você tem a foto, nós podemos decorar.
+                        </div>
+                    </div>
+
+                    <!-- Pergunta 2 --><div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <input type="checkbox" id="faq-2" class="faq-toggle hidden">
+                        <label for="faq-2" class="faq-question flex justify-between items-center p-6 cursor-pointer">
+                            <span class="text-lg font-medium text-gray-900 dark:text-white" data-lang="faq_2_q">Posso pedir um estilo de decoração específico?</span>
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </label>
+                        <div class="faq-answer max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out px-6 text-gray-700 dark:text-gray-300" data-lang="faq_2_a">
+                            Sim! No formulário de envio, você pode especificar o estilo desejado (ex: moderno, industrial, escandinavo, clássico) ou nos dar referências. Nossa equipe de designers fará o possível para seguir sua visão.
+                        </div>
+                    </div>
+
+                    <!-- Pergunta 3 --><div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <input type="checkbox" id="faq-3" class="faq-toggle hidden">
+                            <label for="faq-3" class="faq-question flex justify-between items-center p-6 cursor-pointer">
+                            <span class="text-lg font-medium text-gray-900 dark:text-white" data-lang="faq_3_q">E se eu não gostar da primeira prova?</span>
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </label>
+                        <div class="faq-answer max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out px-6 text-gray-700 dark:text-gray-300" data-lang="faq_3_a">
+                            A etapa de avaliação serve justamente para isso. Você poderá solicitar ajustes na prova enviada (ex: trocar cor do sofá, mudar posição de um quadro). Nosso objetivo é que você fique 100% satisfeito com a imagem final.
+                        </div>
+                    </div>
+
+                    <!-- Pergunta 4 --><div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <input type="checkbox" id="faq-4" class="faq-toggle hidden">
+                            <label for="faq-4" class="faq-question flex justify-between items-center p-6 cursor-pointer">
+                            <span class="text-lg font-medium text-gray-900 dark:text-white" data-lang="faq_4_q">Que tipo de foto devo enviar?</span>
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </label>
+                        <div class="faq-answer max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out px-6 text-gray-700 dark:text-gray-300" data-lang="faq_4_a">
+                            Quanto melhor a foto original, melhor o resultado. Prefira fotos bem iluminadas (luz natural é ótima), tiradas na altura dos olhos e em alta resolution. Fotos de celular funcionam bem, desde que não estejam tremidas ou escuras demais.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Formulário de Contato --><section id="contato" class="bg-white dark:bg-gray-950 py-20">
+            <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4" data-lang="contact_title">
+                        Vamos Conversar?
+                    </h2>
+                    <!-- CONTRASTE AUMENTADO: text-gray-700 dark:text-gray-300 -->
+                    <p class="text-lg text-gray-700 dark:text-gray-300 mb-6" data-lang="contact_p1">
+                        Tem um projeto de grande volume, uma parceria em mente ou precisa de um plano personalizado para sua construtora ou imobiliária?
+                    </p>
+                    <p class="text-lg text-gray-700 dark:text-gray-300" data-lang="contact_p2">
+                        Preencha o formulário ao lado e nossa equipe de especialistas entrará em contato o mais breve possível.
+                    </p>
+                </div>
+                
+                <form class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700">
+                    <div class="mb-4">
+                        <label for="nome" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_name">Seu Nome*</label>
+                        <input type="text" id="nome" name="nome" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_email">Seu E-mail*</label>
+                        <input type="email" id="email" name="email" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                    </div>
+                    
+                    <!-- Campos País e Telefone lado a lado -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="pais" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_country">País*</label>
+                            <select id="pais" name="pais" required class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                                <option value="Brasil" selected>🇧🇷 Brasil</option>
+                                <option value="Portugal">🇵🇹 Portugal</option>
+                                <option value="Argentina">🇦🇷 Argentina</option>
+                                <option value="Bolivia">🇧🇴 Bolívia</option>
+                                <option value="Chile">🇨🇱 Chile</option>
+                                <option value="Colombia">🇨🇴 Colômbia</option>
+                                <option value="Equador">🇪🇨 Equador</option>
+                                <option value="Guiana">🇬🇾 Guiana</option>
+                                <option value="Guiana Francesa">🇬🇫 Guiana Francesa</option>
+                                <option value="Paraguai">🇵🇾 Paraguai</option>
+                                <option value="Peru">🇵🇪 Peru</option>
+                                <option value="Suriname">🇸🇷 Suriname</option>
+                                <option value="Uruguai">🇺🇾 Uruguai</option>
+                                <option value="Venezuela">🇻🇪 Venezuela</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="telefone" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_phone">Telefone*</label>
+                            <input type="tel" id="telefone" name="telefone" required placeholder="+55 (21) 99999-9999" class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="mensagem" class="block text-sm font-medium text-gray-700 dark:text-gray-200" data-lang="form_message">Mensagem</label>
+                        <textarea id="mensagem" name="mensagem" rows="4" class="mt-1 block w-full px-4 py-3 bg-gray-100 border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-white dark:focus:border-white"></textarea>
+                    </div>
+                    <div>
+                        <button type="submit" class="w-full bg-gray-800 text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 px-8 py-3 rounded-lg text-lg font-medium transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 dark:focus:ring-white dark:focus:ring-offset-gray-800" data-lang="form_submit">
+                            Enviar Contato
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer --><footer class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-2xl font-bold text-gray-900 dark:text-white mb-4">GeneApp Decor</p>
+            <div class="flex justify-center space-x-6 mb-6">
+                <a href="#servico" class="hover:text-gray-900 dark:hover:text-white" data-lang="footer_service">O Serviço</a>
+                <a href="#portfolio" class="hover:text-gray-900 dark:hover:text-white" data-lang="footer_portfolio">Portfólio</a>
+                <a href="#precos" class="hover:text-gray-900 dark:hover:text-white" data-lang="footer_pricing">Preços</a>
+                <a href="#contato" class="hover:text-gray-900 dark:hover:text-white" data-lang="footer_contact">Contato</a>
+            </div>
+            <p data-lang="footer_copy">&copy; 2025 GeneApp Decor. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Script de Tradução e Moeda -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 0. CONSTANTES DE CONFIGURAÇÃO ---
+            // As constantes defaultLangKey e defaultTheme são lidas do script no <head>
+            
+            // --- 1. DEFINIÇÕES DE DADOS ---
+
+            const translations = {
+                'pt-br': {
+                    nav_service: 'O Serviço',
+                    nav_portfolio: 'Antes e Depois',
+                    nav_how: 'Como Funciona',
+                    nav_pricing: 'Preços',
+                    nav_faq: 'FAQ',
+                    nav_contact: 'Entrar em Contato',
+                    hero_title: 'Destaque seus imóveis e venda mais rápido.',
+                    hero_subtitle: 'Transformamos ambientes vazios ou desatualizados em espaços atraentes e convidativos. Ajude seus clientes a enxergar o verdadeiro potencial do imóvel com a decoração virtual.',
+                    hero_cta: 'Ver Nossos Planos',
+                    service_title: 'Decoração Virtual que Respeita a Realidade',
+                    service_subtitle: 'Nosso compromisso é com a transparência. Criamos visuais deslumbrantes mantendo a integridade do espaço.',
+                    service_card_title: 'Total Preservação Estrutural',
+                    service_card_p1: 'Frisamos que nosso serviço de *home staging* virtual preserva <strong>100% das características físicas</strong> do cômodo. Mantemos a estrutura exata de paredes, teto, portas e janelas.',
+                    service_card_p2: 'O cliente tem total flexibilidade: podemos manter as cores e texturas atuais para uma decoração rápida ou, se preferir, podemos <strong class="text-gray-800 dark:text-gray-100">alterar cores e texturas</strong> de paredes, teto, portas e janelas para mostrar todo o potencial de modernização do espaço. A escolha é sua.',
+                    portfolio_title: 'Veja a Transformação Acontecer',
+                    portfolio_1_title: 'Sala de Estar | Transformação Rural',
+                    portfolio_1_desc: 'Veja como um ambiente pode ser totalmente transformado com a decoração virtual.',
+                    portfolio_2_title: 'Quarto Principal | Imóvel Usado',
+                    portfolio_2_desc: 'Modernização de quarto com móveis datados para um visual limpo e atual.',
+                    portfolio_3_title: 'Cozinha | Lançamento',
+                    portfolio_3_desc: 'Demonstração de potencial com uma cozinha planejada e funcional.',
+                    portfolio_4_title: 'Varanda Gourmet | Área Externa',
+                    portfolio_4_desc: 'Criação de um espaço de lazer e convivência em uma varanda sem uso.',
+                    how_title: 'Nosso Processo: Rápido e Transparente',
+                    how_1_title: 'Contrate o Plano',
+                    how_1_desc: 'Nosso sistema é pré-pago. Escolha e adquira o kit de imagens que melhor atende sua demanda.',
+                    how_2_title: 'Envie os Detalhes',
+                    how_2_desc: 'Você recebe acesso a um formulário simples para anexar a foto, as dimensões e suas preferências de decoração.',
+                    how_3_title: 'Avalie a Prova',
+                    how_3_desc: 'Em até 24h úteis, entramos em contato para você avaliar a imagem desenvolvida e solicitar ajustes, se necessário.',
+                    how_4_title: 'Receba a Imagem',
+                    how_4_desc: 'Após sua aprovação final, enviamos a imagem em alta resolução em até 24h úteis. Pronta para usar!',
+                    pricing_title: 'Investimento Inteligente para Resultados Reais',
+                    pricing_subtitle: 'Preços transparentes para um serviço que acelera o ciclo de vendas e valoriza seus anúncios.',
+                    plan_1_title: 'Plano Unitário',
+                    plan_1_desc: 'Ideal para testar ou para um destaque específico.',
+                    plan_1_feat1: '1 Imagem Decorada',
+                    plan_cta_1: 'Contratar',
+                    plan_popular: 'MAIS POPULAR',
+                    plan_2_title: 'Kit 4 Imagens',
+                    plan_2_desc: 'Perfeito para um apartamento ou casa pequena (Sala, Cozinha, 2 Quartos).',
+                    plan_2_feat1: '4 Imagens Decoradas',
+                    plan_cta_2: 'Contratar Agora',
+                    plan_3_title: 'Kit 10 Imagens',
+                    plan_3_desc: 'Para construtoras e imobiliárias com alta demanda de anúncios.',
+                    plan_3_feat1: '10 Imagens Decoradas',
+                    plan_cta_3: 'Contratar',
+                    economy_2: 'Economia de 11%',
+                    economy_3: 'Melhor Custo-Benefício', // Genérico, pois o cálculo de BRL (30%) é diferente de USD (34%)
+                    faq_title: 'Perguntas Frequentes (FAQ)',
+                    faq_1_q: 'Quais tipos de ambientes vocês decoram?',
+                    faq_1_a: 'Decoramos qualquer tipo de ambiente interno ou externo: salas, quartos, cozinhas, banheiros, varandas, escritórios, áreas de lazer, etc. Se você tem a foto, nós podemos decorar.',
+                    faq_2_q: 'Posso pedir um estilo de decoração específico?',
+                    faq_2_a: 'Sim! No formulário de envio, você pode especificar o estilo desejado (ex: moderno, industrial, escandinavo, clássico) ou nos dar referências. Nossa equipe de designers fará o possível para seguir sua visão.',
+                    faq_3_q: 'E se eu não gostar da primeira prova?',
+                    faq_3_a: 'A etapa de avaliação serve justamente para isso. Você poderá solicitar ajustes na prova enviada (ex: trocar cor do sofá, mudar posição de um quadro). Nosso objetivo é que você fique 100% satisfeito com a imagem final.',
+                    faq_4_q: 'Que tipo de foto devo enviar?',
+                    faq_4_a: 'Quanto melhor a foto original, melhor o resultado. Prefira fotos bem iluminadas (luz natural é ótima), tiradas na altura dos olhos e em alta resolution. Fotos de celular funcionam bem, desde que não estejam tremidas ou escuras demais.',
+                    contact_title: 'Vamos Conversar?',
+                    contact_p1: 'Tem um projeto de grande volume, uma parceria em mente ou precisa de um plano personalizado para sua construtora ou imobiliária?',
+                    contact_p2: 'Preencha o formulário ao lado e nossa equipe de especialistas entrará em contato o mais breve possível.',
+                    form_name: 'Seu Nome*',
+                    form_email: 'Seu E-mail*',
+                    form_country: 'País*',
+                    form_phone: 'Telefone*',
+                    form_message: 'Mensagem',
+                    form_submit: 'Enviar Contato',
+                    footer_service: 'O Serviço',
+                    footer_portfolio: 'Portfólio',
+                    footer_pricing: 'Preços',
+                    footer_contact: 'Contato',
+                    footer_copy: '© 2025 GeneApp Decor. Todos os direitos reservados.'
+                },
+                'pt-pt': {
+                    nav_service: 'O Serviço',
+                    nav_portfolio: 'Antes e Depois',
+                    nav_how: 'Como Funciona',
+                    nav_pricing: 'Preços',
+                    nav_faq: 'FAQ',
+                    nav_contact: 'Entrar em Contacto',
+                    hero_title: 'Destaque os seus imóveis e venda mais rápido.',
+                    hero_subtitle: 'Transformamos ambientes vazios ou desatualizados em espaços atraentes e convidativos. Ajude os seus clientes a enxergar o verdadeiro potencial do imóvel com a decoração virtual.',
+                    hero_cta: 'Ver Os Nossos Planos',
+                    service_title: 'Decoração Virtual que Respeita a Realidade',
+                    service_subtitle: 'O nosso compromisso é com a transparência. Criamos visuais deslumbrantes mantendo a integridade do espaço.',
+                    service_card_title: 'Total Preservação Estrutural',
+                    service_card_p1: 'Frisamos que o nosso serviço de *home staging* virtual preserva <strong>100% das características físicas</strong> do cómodo. Mantemos a estrutura exata de paredes, teto, portas e janelas.',
+                    service_card_p2: 'O cliente tem total flexibilidade: podemos manter as cores e texturas atuais para uma decoração rápida ou, se preferir, podemos <strong class="text-gray-800 dark:text-gray-100">alterar cores e texturas</strong> de paredes, teto, portas e janelas para mostrar todo o potencial de modernização do espaço. A escolha é sua.',
+                    portfolio_title: 'Veja a Transformação Acontecer',
+                    portfolio_1_title: 'Sala de Estar | Transformação Rural',
+                    portfolio_1_desc: 'Veja como um ambiente pode ser totalmente transformado com a decoração virtual.',
+                    portfolio_2_title: 'Quarto Principal | Imóvel Usado',
+                    portfolio_2_desc: 'Modernização de quarto com móveis datados para um visual limpo e atual.',
+                    portfolio_3_title: 'Cozinha | Lançamento',
+                    portfolio_3_desc: 'Demonstração de potencial com uma cozinha planeada e funcional.',
+                    portfolio_4_title: 'Varanda Gourmet | Área Externa',
+                    portfolio_4_desc: 'Criação de um espaço de lazer e convivência numa varanda sem uso.',
+                    how_title: 'O Nosso Processo: Rápido e Transparente',
+                    how_1_title: 'Contrate o Plano',
+                    how_1_desc: 'O nosso sistema é pré-pago. Escolha e adquira o kit de imagens que melhor atende à sua demanda.',
+                    how_2_title: 'Envie os Detalhes',
+                    how_2_desc: 'Recebe acesso a um formulário simples para anexar a foto, as dimensões e as suas preferências de decoração.',
+                    how_3_title: 'Avalie a Prova',
+                    how_3_desc: 'Em até 24h úteis, entramos em contacto para avaliar a imagem desenvolvida e solicitar ajustes, se necessário.',
+                    how_4_title: 'Receba a Imagem',
+                    how_4_desc: 'Após a sua aprovação final, enviamos a imagem em alta resolução em até 24h úteis. Pronta a usar!',
+                    pricing_title: 'Investimento Inteligente para Resultados Reais',
+                    pricing_subtitle: 'Preços transparentes para um serviço que acelera o ciclo de vendas e valoriza os seus anúncios.',
+                    plan_1_title: 'Plano Unitário',
+                    plan_1_desc: 'Ideal para testar ou para um destaque específico.',
+                    plan_1_feat1: '1 Imagem Decorada',
+                    plan_cta_1: 'Contratar',
+                    plan_popular: 'MAIS POPULAR',
+                    plan_2_title: 'Kit 4 Imagens',
+                    plan_2_desc: 'Perfeito para um apartamento ou casa pequena (Sala, Cozinha, 2 Quartos).',
+                    plan_2_feat1: '4 Imagens Decoradas',
+                    plan_cta_2: 'Contratar Agora',
+                    plan_3_title: 'Kit 10 Imagens',
+                    plan_3_desc: 'Para construtoras e imobiliárias com alta demanda de anúncios.',
+                    plan_3_feat1: '10 Imagens Decoradas',
+                    plan_cta_3: 'Contratar',
+                    economy_2: 'Economia de 25%', // USD
+                    economy_3: 'Economia de 34%', // USD
+                    faq_title: 'Perguntas Frequentes (FAQ)',
+                    faq_1_q: 'Que tipos de ambientes vocês decoram?',
+                    faq_1_a: 'Decoramos qualquer tipo de ambiente interno ou externo: salas, quartos, cozinhas, casas de banho, varandas, escritórios, áreas de lazer, etc. Se tem a foto, nós podemos decorar.',
+                    faq_2_q: 'Posso pedir um estilo de decoração específico?',
+                    faq_2_a: 'Sim! No formulário de envio, pode especificar o estilo desejado (ex: moderno, industrial, escandinavo, clássico) ou dar-nos referências. A nossa equipa de designers fará o possível para seguir a sua visão.',
+                    faq_3_q: 'E se eu não gostar da primeira prova?',
+                    faq_3_a: 'A etapa de avaliação serve precisamente para isso. Poderá solicitar ajustes na prova enviada (ex: trocar cor do sofá, mudar posição de um quadro). O nosso objetivo é que fique 100% satisfeito com a imagem final.',
+                    faq_4_q: 'Que tipo de foto devo enviar?',
+                    faq_4_a: 'Quanto melhor a foto original, melhor o resultado. Prefira fotos bem iluminadas (luz natural é ótima), tiradas à altura dos olhos e em alta resolução. Fotos de telemóvel funcionam bem, desde que não estejam tremidas ou escuras demais.',
+                    contact_title: 'Vamos Conversar?',
+                    contact_p1: 'Tem um projeto de grande volume, uma parceria em mente ou precisa de um plano personalizado para a sua construtora ou imobiliária?',
+                    contact_p2: 'Preencha o formulário ao lado e a nossa equipa de especialistas entrará em contacto o mais breve possível.',
+                    form_name: 'O Seu Nome*',
+                    form_email: 'O Seu E-mail*',
+                    form_country: 'País*',
+                    form_phone: 'Telefone*',
+                    form_message: 'Mensagem',
+                    form_submit: 'Enviar Contacto',
+                    footer_service: 'O Serviço',
+                    footer_portfolio: 'Portfólio',
+                    footer_pricing: 'Preços',
+                    footer_contact: 'Contacto',
+                    footer_copy: '© 2025 GeneApp Decor. Todos os direitos reservados.'
+                },
+                es: {
+                    nav_service: 'El Servicio',
+                    nav_portfolio: 'Antes y Después',
+                    nav_how: 'Cómo Funciona',
+                    nav_pricing: 'Precios',
+                    nav_faq: 'FAQ',
+                    nav_contact: 'Contactar',
+                    hero_title: 'Destaque sus inmuebles y venda más rápido.',
+                    hero_subtitle: 'Transformamos ambientes vacíos o desactualizados en espacios atractivos y acogedores. Ayude a sus clientes a ver el verdadero potencial del inmueble con la decoração virtual.',
+                    hero_cta: 'Ver Nuestros Planes',
+                    service_title: 'Decoración Virtual que Respeta la Realidade',
+                    service_subtitle: 'Nuestro compromiso es con la transparencia. Creamos visuales impresionantes manteniendo la integridad del espacio.',
+                    service_card_title: 'Total Preservación Estructural',
+                    service_card_p1: 'Destacamos que nuestro servicio de *home staging* virtual preserva <strong>100% las características físicas</strong> de la habitación. Mantenemos la estructura exacta de paredes, techo, puertas y ventanas.',
+                    service_card_p2: 'El cliente tiene total flexibilidad: podemos manter as cores e texturas atuais para uma decoração rápida ou, si prefiere, podemos <strong class="text-gray-800 dark:text-gray-100">cambiar colores y texturas</strong> de paredes, techo, puertas y ventanas para mostrar todo el potencial de modernización del espacio. La elección es suya.',
+                    portfolio_title: 'Vea la Transformación Ocurrir',
+                    portfolio_1_title: 'Sala de Estar | Transformação Rural',
+                    portfolio_1_desc: 'Vea cómo un ambiente puede ser totalmente transformado con la decoração virtual.',
+                    portfolio_2_title: 'Dormitorio Principal | Inmueble Usado',
+                    portfolio_2_desc: 'Modernización de dormitorio con muebles anticuados para un visual limpio y actual.',
+                    portfolio_3_title: 'Cocina | Lanzamiento',
+                    portfolio_3_desc: 'Demostración de potencial con una cocina planificada y funcional.',
+                    portfolio_4_title: 'Balcón Gourmet | Área Externa',
+                    portfolio_4_desc: 'Creación de un espacio de ocio y convivencia en un balcón sin uso.',
+                    how_title: 'Nuestro Proceso: Rápido y Transparente',
+                    how_1_title: 'Contrate el Plan',
+                    how_1_desc: 'Nuestro sistema es prepago. Elija y adquiera el kit de imágenes que mejor se adapte a su demanda.',
+                    how_2_title: 'Envíe los Detalles',
+                    how_2_desc: 'Recibe acceso a um formulário simple para adjuntar la foto, las dimensiones y sus preferences de decoração.',
+                    how_3_title: 'Evalúe la Prueba',
+                    how_3_desc: 'En hasta 24h hábiles, contactamos para que evalúe la imagen desarrollada y solicite ajustes, si es necesario.',
+                    how_4_title: 'Reciba la Imagen',
+                    how_4_desc: 'Después de su aprobación final, enviamos la imagen en alta resolución en hasta 24h hábiles. ¡Lista para usar!',
+                    pricing_title: 'Inversión Inteligente para Resultados Reales',
+                    pricing_subtitle: 'Precios transparentes para un servicio que acelera el ciclo de ventas y valora sus anuncios.',
+                    plan_1_title: 'Plan Unitario',
+                    plan_1_desc: 'Ideal para probar o para un destaque específico.',
+                    plan_1_feat1: '1 Imagen Decorada',
+                    plan_cta_1: 'Contratar',
+                    plan_popular: 'MÁS POPULAR',
+                    plan_2_title: 'Kit 4 Imágenes',
+                    plan_2_desc: 'Perfecto para un apartamento o casa pequeña (Sala, Cocina, 2 Dormitorios).',
+                    plan_2_feat1: '4 Imágenes Decoradas',
+                    plan_cta_2: 'Contratar Ahora',
+                    plan_3_title: 'Kit 10 Imágenes',
+                    plan_3_desc: 'Para constructoras e inmobiliarias con alta demanda de anuncios.',
+                    plan_3_feat1: '10 Imágenes Decoradas',
+                    plan_cta_3: 'Contratar',
+                    economy_2: 'Ahorro del 25%', // USD
+                    economy_3: 'Ahorro del 34%', // USD
+                    faq_title: 'Preguntas Frecuentes (FAQ)',
+                    faq_1_q: '¿Qué tipos de ambientes decoran?',
+                    faq_1_a: 'Decoramos cualquier tipo de ambiente interno o externo: salas, dormitorios, cocinas, baños, balcones, oficinas, áreas de ocio, etc. Si usted tiene la foto, nosotros podemos decorar.',
+                    faq_2_q: '¿Puedo pedir un estilo de decoração específico?',
+                    faq_2_a: '¡Sí! En el formulario de envío, puede especificar el estilo deseado (ej: moderno, industrial, escandinavo, clássico) o darnos referencias. Nuestro equipo de diseñadores hará lo posible para seguir su visión.',
+                    faq_3_q: '¿Y si no me gusta la primera prueba?',
+                    faq_3_a: 'La etapa de evaluación sirve precisamente para eso. Podrá solicitar ajustes en la prueba enviada (ej: cambiar color del sofá, mover un cuadro). Nuestro objetivo es que quede 100% satisfecho con la imagen final.',
+                    faq_4_q: '¿Qué tipo de foto debo enviar?',
+                    faq_4_a: 'Cuanto mejor sea la foto original, mejor será el resultado. Prefiera fotos bien iluminadas (la luz natural es ideal), tomadas a la altura de los ojos y en alta resolución. Las fotos de celular funcionan bien, siempre que no estén movidas o demasiado oscuras.',
+                    contact_title: '¿Hablamos?',
+                    contact_p1: '¿Tiene un proyecto de gran volumen, una asociación en mente o necesita un plan personalizado para su constructora o inmobiliaria?',
+                    contact_p2: 'Complete el formulario al lado y nuestro equipo de especialistas se pondrá en contacto lo antes posible.',
+                    form_name: 'Su Nombre*',
+                    form_email: 'Su E-mail*',
+                    form_country: 'País*',
+                    form_phone: 'Teléfono*',
+                    form_message: 'Mensaje',
+                    form_submit: 'Enviar Contacto',
+                    footer_service: 'El Servicio',
+                    footer_portfolio: 'Portafolio',
+                    footer_pricing: 'Preços',
+                    footer_contact: 'Contacto',
+                    footer_copy: '© 2025 GeneApp Decor. Todos os derechos reservados.'
+                }
+            };
+
+            const prices = {
+                brl: {
+                    plan1: 'R$ 57<span class="text-lg font-normal">,00</span>',
+                    plan2: 'R$ 177<span class="text-lg font-normal">,00</span>',
+                    plan3: 'R$ 397<span class="text-lg font-normal">,00</span>',
+                    economy2: 'Economia de 11%', // (57*4 = 228) vs 177
+                    economy3: 'Melhor Custo-Benefício'  // (57*10 = 570) vs 397 (30% de economia, mas usamos o texto genérico)
+                },
+                usd: {
+                    plan1: 'US$ 12<span class="text-lg font-normal">,00</span>',
+                    plan2: 'US$ 36<span class="text-lg font-normal">,00</span>',
+                    plan3: 'US$ 79<span class="text-lg font-normal">,00</span>',
+                    economy2: 'Economia de 25%', // (12*4 = 48) vs 36
+                    economy3: 'Economia de 34%'  // (12*10 = 120) vs 79
+                }
+            };
+
+            // --- 2. SELETORES DE ELEMENTOS ---
+            
+            const langSelectors = [document.getElementById('lang-selector'), document.getElementById('lang-selector-mobile')];
+            const langElements = document.querySelectorAll('[data-lang]');
+            const currencyToggle = document.getElementById('currency-toggle');
+            
+            const priceElements = {
+                plan1: document.querySelector('[data-price="plan1"]'),
+                plan2: document.querySelector('[data-price="plan2"]'),
+                plan3: document.querySelector('[data-price="plan3"]')
+            };
+            const economyElements = {
+                plan2: document.querySelector('[data-economy="plan2"]'),
+                plan3: document.querySelector('[data-economy="plan3"]')
+            };
+
+            let currentLang = defaultLangKey; // Definido no <head>
+            let currentCurrency = 'brl';
+            
+            // --- 3. FUNÇÕES ---
+            
+            /**
+             * Atualiza todos os textos da página com base no idioma selecionado.
+             * Também define a moeda padrão com base no idioma.
+             */
+            function updateTexts(lang) {
+                currentLang = lang;
+                
+                langElements.forEach(el => {
+                    const key = el.getAttribute('data-lang');
+                    if (translations[lang] && translations[lang][key]) {
+                        el.innerHTML = translations[lang][key];
+                    }
+                });
+
+                // Define o idioma da página
+                if(lang === 'pt-br') {
+                    document.documentElement.lang = 'pt-BR';
+                } else if (lang === 'pt-pt') {
+                    document.documentElement.lang = 'pt-PT';
+                } else {
+                    document.documentElement.lang = lang;
+                }
+                
+                // Sincroniza os seletores de idioma
+                langSelectors.forEach(selector => {
+                    if (selector.value !== lang) {
+                        selector.value = lang;
+                    }
+                });
+
+                // Define a moeda padrão com base no idioma
+                // Se for pt-br, o padrão é BRL. Para qualquer outro, o padrão é USD.
+                const newCurrency = (lang === 'pt-br') ? 'brl' : 'usd';
+                currencyToggle.checked = (newCurrency === 'usd');
+                updatePrices(newCurrency);
+            }
+
+            /**
+             * Atualiza os preços e os textos de economia com base na moeda selecionada.
+             */
+            function updatePrices(currency) {
+                currentCurrency = currency;
+                
+                // Atualiza os preços principais
+                priceElements.plan1.innerHTML = prices[currency].plan1;
+                priceElements.plan2.innerHTML = prices[currency].plan2;
+                priceElements.plan3.innerHTML = prices[currency].plan3;
+
+                // Atualiza os textos de economia
+                // Usamos o idioma atual para traduzir a palavra "Economia"
+                const lang = currentLang;
+                let economy2Text = prices[currency].economy2;
+                let economy3Text = prices[currency].economy3;
+
+                // Traduz "Economia de..." para o idioma atual
+                if (lang === 'es') {
+                    economy2Text = economy2Text.replace('Economia de', 'Ahorro del');
+                    economy3Text = economy3Text.replace('Economia de', 'Ahorro del').replace('Melhor Custo-Benefício', 'Mejor Costo-Beneficio');
+                } else if (lang === 'pt-pt') {
+                    economy2Text = economy2Text.replace('Economia de', 'Economia de'); // Já está ok
+                     // Substitui a frase genérica pela porcentagem correta em USD
+                     if (currency === 'usd') {
+                        economy3Text = prices['usd'].economy3; // ex: "Economia de 34%"
+                     } else {
+                        // Se for BRL, usa a tradução de "Melhor Custo-Benefício" do pt-br 
+                        economy3Text = translations['pt-br'].economy_3; 
+                     }
+                } else { // pt-br
+                    // Em BRL, o plano 3 usa uma frase genérica
+                    if (currency === 'brl') {
+                        economy3Text = translations['pt-br'].economy_3; // "Melhor Custo-Benefício"
+                    }
+                    // Se for USD, já vem "Economia de 34%"
+                }
+                
+                // Atualiza o HTML dos elementos de economia
+                // As cores do ícone são definidas pelo 'color' do texto, que é herdado
+                const iconClasses = "w-5 h-5 mr-2"; 
+                economyElements.plan2.innerHTML = `<svg class="${iconClasses}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>${economy2Text}`;
+                economyElements.plan3.innerHTML = `<svg class="${iconClasses}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>${economy3Text}`;
+            }
+
+
+            // --- 4. EVENT LISTENERS ---
+
+            // Listeners para os seletores de idioma
+            langSelectors.forEach(selector => {
+                selector.addEventListener('change', (e) => {
+                    updateTexts(e.target.value);
+                });
+            });
+
+            // Listener para o seletor de moeda
+            currencyToggle.addEventListener('change', (e) => {
+                const newCurrency = e.target.checked ? 'usd' : 'brl';
+                updatePrices(newCurrency);
+            });
+            
+
+            // --- 5. INICIALIZAÇÃO ---
+            
+            // O tema já foi aplicado no <head> com base na constante defaultTheme.
+            
+            // Inicializa a página com o idioma e a moeda padrão definidos na Configuração
+            updateTexts(defaultLangKey);
+        });
+    </script>
+
+</body>
+</html>
